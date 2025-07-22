@@ -1,0 +1,37 @@
+.add-child-modal {
+    border-radius: 16px;
+}
+
+.add-child-modal .ant-modal-title {
+    text-align: center;
+    margin: 0;
+}
+
+.add-child-modal .ant-form-item {
+    margin-bottom: 5px;
+}
+
+.add-child-modal .ant-form-item-control-input {
+    margin-top: 5px;
+}
+
+.add-child-modal .ant-form-item:last-child {
+    text-align: right;
+}
+
+.add-child-modal .ant-modal-content {
+    border-radius: 16px;
+}
+
+.add-child-modal .ant-modal-header {
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+.custom-form-item .ant-form-item-label > label {
+    margin-bottom: -5px;
+}
+
+.custom-form-item .ant-form-item-control {
+    margin-top: -8px;
+}

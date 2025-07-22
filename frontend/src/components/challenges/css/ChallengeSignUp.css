@@ -1,0 +1,25 @@
+.button-box {
+    margin-top: 44px;
+}
+
+.apply-button {
+    width: 236px;
+    height: 40px;
+    font-size: 16px;
+    background: #FA8C16;
+    color: white;
+    border-radius: 6px;
+}
+
+.apply-button[disabled] {
+    background: #ccc;
+    color: #888;
+    cursor: not-allowed;
+}
+.apply-button[disabled]:hover {
+    background: #ccc;
+}
+
+.apply-button:hover {
+    background: #FFA940;
+}

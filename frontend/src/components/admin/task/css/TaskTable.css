@@ -1,0 +1,39 @@
+.checkbox-record {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: scale(1.4);
+    padding-bottom: 4px;
+}
+
+.text-edit-table {
+
+}
+
+.ant-table-thead > tr > th {
+    text-align: center!important;
+}
+
+.ant-table-row > .ant-table-cell:nth-child(1),
+.ant-table-row > .ant-table-cell:nth-child(3),
+.ant-table-row > .ant-table-cell:nth-child(5),
+.ant-table-row > .ant-table-cell:nth-child(6){
+    text-align: center;
+}
+
+.ant-typography {
+    margin-right: 30px;
+}
+
+.no-results-message {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+    font-size: 20px;
+}
+
+.clear-icon {
+    font-size: 14px;
+    color: #999;
+    cursor: pointer;
+}

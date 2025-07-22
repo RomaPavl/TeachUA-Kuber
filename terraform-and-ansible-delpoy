@@ -1,0 +1,211 @@
+pipeline {
+    agent any
+
+    environment {
+        TERRAFORM_DIR = './terraform/azure'
+        INVENTORY_FILE = './ansible/inventory/hosts.ini'
+        TFVARS_FILE = 'config.auto.tfvars.json'
+        TFPLAN_JSON = './terraform/azure/tfplan.json'
+        DB_USER = credentials('dev2-datasourse-user')
+        DB_PASSWORD = credentials('dev2-datasource-password')
+        PG_ADMIN_USER = credentials('postgres_admin_user')
+        PG_ADMIN_PASSWORD = credentials('postgres_admin_password')
+    }
+
+    stages {
+
+        stage('Prepare tfvars with secrets') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'datasource-pass', variable: 'DB_PASSWORD'),
+                    string(credentialsId: 'ssh_public_key', variable: 'SSH_PUB_KEY'),
+                    string(credentialsId: 'location', variable: 'LOCATION'),
+                    string(credentialsId: 'resource_group_name', variable: 'RESOURCE_GROUP'),
+                    string(credentialsId: 'admin_username', variable: 'ADMIN_USERNAME'),
+                    string(credentialsId: 'backend_name', variable: 'BACKEND_NAME'),
+                    string(credentialsId: 'monitoring_name', variable: 'MONITORING_NAME'),
+                    string(credentialsId: 'frontend_name', variable: 'FRONTEND_NAME'),
+                    string(credentialsId: 'key_vault_name', variable: 'KEY_VAULT_NAME'),
+                    string(credentialsId: 'postgres_server_name', variable: 'POSTGRES_SERVER_NAME'),
+                    string(credentialsId: 'postgres_db_name', variable: 'POSTGRES_DB_NAME'),
+                    string(credentialsId: 'postgres_admin_user', variable: 'POSTGRES_ADMIN_USER'),
+                    string(credentialsId: 'postgres_admin_password', variable: 'POSTGRES_ADMIN_PASSWORD'),
+                    string(credentialsId: 'clientId', variable: 'TF_CLIENT_ID'),
+                    string(credentialsId: 'clientSecret', variable: 'TF_CLIENT_SECRET'),
+                    string(credentialsId: 'tenant_id', variable: 'TF_TENANT_ID'),
+                    string(credentialsId: 'subscription_id', variable: 'TF_SUBSCRIPTION_ID')
+                ]) {
+                    script {
+                        def tfvarsContent = """
+{
+    "location": "${LOCATION}",
+    "resource_group_name": "${RESOURCE_GROUP}",
+    "admin_username": "${ADMIN_USERNAME}",
+    "ssh_public_key": "${SSH_PUB_KEY}",
+    "db_password": "${DB_PASSWORD}",
+    "frontend_name": "${FRONTEND_NAME}",
+    "backend_name": "${BACKEND_NAME}",
+    "monitoring_name": "${MONITORING_NAME}",
+    "key_vault_name": "${KEY_VAULT_NAME}",
+    "postgres_server_name": "${POSTGRES_SERVER_NAME}",
+    "postgres_db_name": "${POSTGRES_DB_NAME}",
+    "postgres_admin_user": "${POSTGRES_ADMIN_USER}",
+    "postgres_admin_password": "${POSTGRES_ADMIN_PASSWORD}",
+    "client_id": "${TF_CLIENT_ID}",
+    "client_secret": "${TF_CLIENT_SECRET}",
+    "tenant_id": "${TF_TENANT_ID}",
+    "subscription_id": "${TF_SUBSCRIPTION_ID}"
+}
+"""
+                        writeFile file: "${env.TERRAFORM_DIR}/config.auto.tfvars.json", text: tfvarsContent
+                    }
+                }
+            }
+        }
+
+        stage('Terraform Init & Plan') {
+    steps {
+        dir("${env.TERRAFORM_DIR}") {
+            withCredentials([
+                string(credentialsId: 'clientId', variable: 'TF_CLIENT_ID'),
+                string(credentialsId: 'clientSecret', variable: 'TF_CLIENT_SECRET'),
+                string(credentialsId: 'tenant_id', variable: 'TF_TENANT_ID'),
+                string(credentialsId: 'subscription_id', variable: 'TF_SUBSCRIPTION_ID')
+            ]) {
+                withEnv([
+                    "ARM_CLIENT_ID=${TF_CLIENT_ID}",
+                    "ARM_CLIENT_SECRET=${TF_CLIENT_SECRET}",
+                    "ARM_TENANT_ID=${TF_TENANT_ID}",
+                    "ARM_SUBSCRIPTION_ID=${TF_SUBSCRIPTION_ID}"
+                ]) {
+                    sh '''
+                        set +e
+                        terraform init
+                        terraform plan -detailed-exitcode -out=tfplan
+                        exit_code=$?
+
+                        if [ $exit_code -eq 2 ]; then
+                            echo "Changes detected"
+                            terraform show -json tfplan > tfplan.json
+                            echo true > changes.flag
+                        elif [ $exit_code -eq 0 ]; then
+                            echo "No changes"
+                            echo false > changes.flag
+                        else
+                            echo "Terraform plan failed"
+                            exit $exit_code
+                        fi
+
+                        exit 0
+                    '''
+                }
+            }
+        }
+    }
+}
+
+
+
+        stage('Terraform Apply if Changes') {
+            steps {
+                script {
+                    def hasChanges = readFile("${env.TERRAFORM_DIR}/changes.flag").trim()
+                    if (hasChanges == 'true') {
+                        echo 'Changes detected'
+                        sh "cd ${env.TERRAFORM_DIR} && terraform apply -auto-approve tfplan"
+                    } else {
+                        echo 'No changes'
+                    }
+                }
+            }
+        }
+
+        stage('Extract Terraform Outputs') {
+            steps {
+                script {
+                    sh "cd ${env.TERRAFORM_DIR} && terraform output -json > outputs.json"
+                    def tfOutput = readJSON file: "${env.TERRAFORM_DIR}/outputs.json"
+
+                    env.FRONTEND_IP   = tfOutput.public_ips.value.frontend
+                    env.BACKEND_IP    = tfOutput.public_ips.value.backend
+                    env.BACKEND_PRIV  = tfOutput.private_ips.value.backend
+                    env.DB_HOST       = tfOutput.db_host.value
+                    env.FRONTEND_PRIV  = tfOutput.private_ips.value.frontend
+                    env.MONITORING_IP   = tfOutput.public_ips.value.monitoring
+                }
+            }
+        }
+
+        stage('Generate Inventory') {
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'azure-ssh-key', keyFileVariable: 'SSH_KEY_PATH')]) {
+                    script {
+                        def inventoryContent = """
+[all:vars]
+env=dev
+
+[frontend]
+frontend ansible_host=${env.FRONTEND_IP} ansible_user=azureuser ansible_python_interpreter=/usr/bin/python3 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[backend]
+backend ansible_host=${env.BACKEND_IP} ansible_user=azureuser ansible_python_interpreter=/usr/bin/python3 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[monitoring]
+backend ansible_host=${env.MONITORING_IP} ansible_user=azureuser ansible_python_interpreter=/usr/bin/python3 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+"""
+                        writeFile file: 'ansible/azure/inventory/hosts.ini', text: inventoryContent
+                    }
+                }
+            }
+        }
+
+       stage('Run Ansible Backend Playbook') {
+    steps {
+        withCredentials([
+    sshUserPrivateKey(credentialsId: 'azure-ssh-key', keyFileVariable: 'SSH_KEY'),
+    usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD'),
+    string(credentialsId: 'clientId', variable: 'AZURE_CLIENT_ID'),
+    string(credentialsId: 'clientSecret', variable: 'AZURE_CLIENT_SECRET'),
+    string(credentialsId: 'tenant_id', variable: 'AZURE_TENANT_ID'),
+    file(credentialsId: 'teachua-dump', variable: 'DUMP_FILE')
+]) {
+    sh """
+        mkdir -p ansible/azure/playbooks/roles/backend/files
+        cp "$DUMP_FILE" ansible/azure/playbooks/roles/backend/files/teachua_full_dump.sql
+        ansible-playbook ansible/azure/playbooks/backend.yml \
+        -i ansible/azure/inventory/hosts.ini \
+        --private-key "$SSH_KEY" \
+        -e db_user=$DB_USER \
+        -e db_password=$DB_PASSWORD \
+        -e postgres_admin_user=$PG_ADMIN_USER \
+        -e postgres_admin_password=$PG_ADMIN_PASSWORD \
+        -e db_host=$DB_HOST
+    """
+}
+}
+}
+        stage('Run Ansible Frontend Playbook') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(credentialsId: 'azure-ssh-key', keyFileVariable: 'SSH_KEY'),
+                    usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD'),
+                ]) {
+                    withEnv([
+                        "AZURE_CLIENT_ID=${env.AZURE_CLIENT_ID}",
+                        "AZURE_CLIENT_SECRET=${env.AZURE_CLIENT_SECRET}",
+                        "AZURE_TENANT_ID=${env.AZURE_TENANT_ID}"
+                    ]) {
+                            sh """
+                                ansible-playbook -i ansible/azure/inventory/hosts.ini \
+                                ansible/azure/playbooks/frontend.yml \
+                                --private-key '${SSH_KEY}' \
+                                -e "backend_ip=${BACKEND_PRIV}"
+                            """
+                    }
+                }
+            }
+        }
+    }
+}
+
+

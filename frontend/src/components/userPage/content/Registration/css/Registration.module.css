@@ -1,0 +1,91 @@
+.childIcon {
+    width: 45px;
+    margin-right: 5px;
+}
+
+.label {
+    user-select: none;
+    font-size: 16px;
+    margin-bottom: 5px;
+    width: 100%;
+    white-space: normal;
+    color: #595959;
+    padding: 0;
+    display: flex;
+    align-items: center; 
+    justify-content: space-between;
+}
+
+.buttonContainer {
+    margin-left: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.childDetails, .userDetails {
+    width: 250px;
+}
+
+.typeName {
+    text-align: center;
+    font-weight: bold; 
+}  
+
+.approveButton {
+    border-radius: 16px;
+
+}
+
+
+.approveButton:hover {
+    color: green;
+    border-color: green;
+}
+
+.cancelButton {
+    border-radius: 16px;
+}
+.cancelButton:hover {
+    color: crimson;
+    border-color: crimson;
+}
+
+.labelApproved {
+    color: green;
+}
+
+.labelCanceled {
+    color: crimson;
+}
+
+@media (max-width: 750px) {
+    .buttonContainer {
+        flex-direction: column;
+        align-items: center;
+    }
+    .cancelButton {
+        width: 100%;
+    }
+}
+
+@media (max-width: 625px) {
+    .label {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .childDetails, .userDetails {
+        width: 100%;
+        text-align: center;
+    }
+
+    .typeName {
+        margin-top: 10px;
+    }
+
+    .approveButton, .cancelButton {
+        margin-top: 10px;
+    }
+}
+

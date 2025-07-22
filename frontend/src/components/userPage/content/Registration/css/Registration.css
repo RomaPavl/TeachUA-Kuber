@@ -1,0 +1,176 @@
+.ant-spin {
+    display: flex;
+    justify-content: center;
+}
+
+.ant-spin-dot {
+    position: static !important;
+}
+
+.content .contentBox {
+    width: 80%;
+    margin-top: 55px;
+}
+
+.content .contentTitle {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 32px;
+    color: #2D4C68;
+}
+
+.contentTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.contentTitle .radioGroup .ant-radio-wrapper {
+    color: #2D4C68;
+    font-size: 18px;
+}
+
+.contentTitle .titleText {
+    margin-right: 20px;
+}
+
+.content .contentTitle .radioGroup {
+    display: flex;
+}
+
+.content .registrations {
+    margin-top: 40px;
+}
+
+.content .noRegistrations {
+    text-align: center;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    color: #2D4C68;
+}
+
+.content .user-content-pagination {
+    text-align: center;
+}
+
+.ant-collapse, .ant-collapse-content {
+    margin-bottom: 10px;
+    border: none;
+
+}
+
+.ant-collapse > .ant-collapse-item > .ant-collapse-header {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    border-bottom: none;
+    box-shadow: none;
+}
+.ant-collapse {
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.ant-collapse > .ant-collapse-item:last-child .ant-collapse-header {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.ant-collapse > .ant-collapse-item:last-child.ant-collapse-item-active > .ant-collapse-content {
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+}
+
+.searchAndFilter {
+    display: flex;
+    border-radius: 16px;
+    margin-top: 20px;
+    height: 35px;
+}
+
+.searchBox {
+    height: 100%;
+    border: none;
+    border-radius: 16px 0 0 16px ;
+    margin-right: 2px;
+}
+
+.filterSelectRight .ant-select-selector {
+    height: 100%;
+    border: none;
+    border-radius: 0 16px 16px 0!important;
+}
+
+.filterSelectStatuses {
+    margin-right: 2px;
+    height: 100%;
+    border: none;
+}
+
+.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    align-items: center;
+    height: 100%;
+    border: none;
+}
+
+.registrationsContent {
+    top: 80px;
+    background: url("../../css/user-background.png");
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.registrationsContent .contentBox {
+    width: 80%;
+    margin-top: 55px;
+}
+
+.registrationsContent .contentTitle {
+    user-select: none;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 32px;
+    color: #2D4C68;
+}
+
+.registrationsContent .registrations {
+    margin-top: 40px;
+}
+
+.registrationsContent .registration {
+    width: 100%;
+    height: min-content;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    background-color: #ffffff;
+    padding: 15px;
+}
+
+.registrationsContent .noRegistrations {
+    text-align: center;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    color: #2D4C68;
+}
+
+.registrationsContent .user-content-pagination {
+    text-align: center;
+}
+
+@media (max-width: 1200px) {
+
+    .registrationsContent {
+        margin-top: 120px;
+    }
+
+    .contentBox {
+        margin-top: 30px;
+    }
+}

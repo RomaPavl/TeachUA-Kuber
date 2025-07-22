@@ -1,0 +1,21 @@
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 20s
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'TeachUA-Back-Monitoring'
+    scrape_interval: 20s
+    static_configs:
+      - targets: ['4.210.80.253:8080']
+    basic_auth:
+      username: 'username@gmail.com'
+      password: 'password'
+
+  - job_name: 'TeachUA-Front-Monitoring'
+    scrape_interval: 20s
+    static_configs:
+      - targets: ['20.238.88.9:80']
+    basic_auth:
+      username: 'username@gmail.com'
+      password: 'password'
