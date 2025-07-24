@@ -14,7 +14,7 @@
 
     - name: Copy Helm chart to master node
       copy:
-        src: ../k8s/backend-helm-chart  # локальна директорія з helm чартом
+        src: ../../../k8s/backend-helm-chart  # локальна директорія з helm чартом
         dest: /home/azureuser
         mode: 0755
 

@@ -5,7 +5,7 @@
   tasks:
     - name: Copy frontend Helm chart to master node
       copy:
-        src: ../k8s/frontend-helm-chart
+        src: ../../../k8s/frontend-helm-chart
         dest: /home/azureuser
         mode: '0755'
 
