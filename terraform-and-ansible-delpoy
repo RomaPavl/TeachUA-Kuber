@@ -151,7 +151,7 @@ frontend ansible_host=${env.FRONTEND_IP} private_ip=${env.FRONTEND_PRIV} ansible
 backend ansible_host=${env.BACKEND_IP} private_ip=${env.BACKEND_PRIV} ansible_user=azureuser ansible_python_interpreter=/usr/bin/python3 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
 [monitoring]
-backend ansible_host=${env.MONITORING_IP} ansible_user=azureuser ansible_python_interpreter=/usr/bin/python3 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+monitoring ansible_host=${env.MONITORING_IP} ansible_user=azureuser ansible_python_interpreter=/usr/bin/python3 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 """
                         writeFile file: 'ansible/azure/inventory/hosts.ini', text: inventoryContent
                     }
