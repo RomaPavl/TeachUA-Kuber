@@ -145,10 +145,10 @@ pipeline {
 env=dev
 
 [frontend]
-frontend ansible_host=${env.FRONTEND_IP} ansible_user=azureuser ansible_python_interpreter=/usr/bin/python3 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+frontend ansible_host=${env.FRONTEND_IP} private_ip=${env.FRONTEND_PRIV} ansible_user=azureuser ansible_python_interpreter=/usr/bin/python3 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
 [backend]
-backend ansible_host=${env.BACKEND_IP} ansible_user=azureuser ansible_python_interpreter=/usr/bin/python3 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+backend ansible_host=${env.BACKEND_IP} private_ip=${env.BACKEND_PRIV} ansible_user=azureuser ansible_python_interpreter=/usr/bin/python3 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
 [monitoring]
 backend ansible_host=${env.MONITORING_IP} ansible_user=azureuser ansible_python_interpreter=/usr/bin/python3 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
