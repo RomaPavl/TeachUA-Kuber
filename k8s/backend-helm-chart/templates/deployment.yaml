@@ -12,8 +12,6 @@ spec:
       labels:
         app: backend
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: backend-vm-nic
       containers:
         - name: backend
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
