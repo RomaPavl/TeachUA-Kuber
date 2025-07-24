@@ -10,6 +10,7 @@ pipeline {
         DB_PASSWORD = credentials('dev2-datasource-password')
         PG_ADMIN_USER = credentials('postgres_admin_user')
         PG_ADMIN_PASSWORD = credentials('postgres_admin_password')
+        VALUES_YAML = credentials('helm-back-values')
     }
 
     stages {
