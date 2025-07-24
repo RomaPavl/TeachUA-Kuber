@@ -102,6 +102,7 @@ module "postgres" {
   allowed_ips = {
     backend = module.vm.public_ips["backend"]
     monitoring = module.vm.public_ips["monitoring"]
+    frontend = module.vm.public_ips["frontend"]
   }
 }
 
