@@ -180,6 +180,8 @@ backend ansible_host=${env.MONITORING_IP} ansible_user=azureuser ansible_python_
     sh """
         sudo mkdir -p ansible/azure/playbooks/roles/backend/files
         sudo cp "$DUMP_FILE" ansible/azure/playbooks/roles/backend/files/teachua_full_dump.sql
+        sudo chmod 644 ansible/azure/playbooks/roles/backend/files/teachua_full_dump.sql
+        sudo chown jenkins:jenkins ansible/azure/playbooks/roles/backend/files/teachua_full_dump.sql
         ansible-playbook ansible/azure/playbooks/backend.yml \
         -i ansible/azure/inventory/hosts.ini \
         --private-key "$SSH_KEY" \
