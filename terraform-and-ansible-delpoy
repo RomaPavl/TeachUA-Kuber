@@ -159,6 +159,13 @@ backend ansible_host=${env.MONITORING_IP} ansible_user=azureuser ansible_python_
                 }
             }
         }
+    stage('Prepare values.yaml') {
+      steps {
+        script {
+          writeFile file: 'k8s/backend-helm-chart/values.yaml', text: "${VALUES_YAML}"
+        }
+      }
+    }
 
        stage('Run Ansible Backend Playbook') {
     steps {
