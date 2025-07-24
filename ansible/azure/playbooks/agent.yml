@@ -17,7 +17,7 @@
 
     - name: Set token fact
       set_fact:
-        k3s_token: "{{ slurped_token.content | b64decode }}"
+        k3s_token: "{{ slurped_token.content | b64decode | trim }}"
 
     - name: Install K3s agent
       shell: |
