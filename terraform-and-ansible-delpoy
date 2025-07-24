@@ -197,28 +197,28 @@ backend ansible_host=${env.MONITORING_IP} ansible_user=azureuser ansible_python_
         stage('Run Ansible k3s master') {
       steps {
         script {
-          sh "ansible-playbook ansible/azure/playbooks/kubernetes.yml -i ansible/azure/inventory/hosts.ini"
+          sh "ansible-playbook ansible/azure/playbooks/kubernetes.yml -i ansible/azure/inventory/hosts.ini --private-key "$SSH_KEY""
         }
       }
     }
        stage('Run Ansible k3s agent') {
       steps {
         script {
-          sh "ansible-playbook ansible/azure/playbooks/agent.yml -i ansible/azure/inventory/hosts.ini"
+          sh "ansible-playbook ansible/azure/playbooks/agent.yml -i ansible/azure/inventory/hosts.ini --private-key "$SSH_KEY""
         }
       }
     }
        stage('Run Ansible backend helm') {
       steps {
         script {
-          sh "ansible-playbook ansible/azure/playbooks/backend-helm.yml -i ansible/azure/inventory/hosts.ini"
+          sh "ansible-playbook ansible/azure/playbooks/backend-helm.yml -i ansible/azure/inventory/hosts.ini --private-key "$SSH_KEY""
         }
       }
     }
      stage('Run Ansible frontend helm') {
       steps {
         script {
-          sh "ansible-playbook ansible/azure/playbooks/frontend-helm.yml -i ansible/azure/inventory/hosts.ini"
+          sh "ansible-playbook ansible/azure/playbooks/frontend-helm.yml -i ansible/azure/inventory/hosts.ini --private-key "$SSH_KEY""
         }
       }
     }
