@@ -20,6 +20,18 @@ variable "backend_name" {
 variable "monitoring_name" {
   description = "Name of backend VM"
 }
+variable "subscription_id" {
+  type = string
+}
+variable "tenant_id" {
+  type = string
+}
+variable "client_id" {
+  type = string
+}
+variable "client_secret" {
+  type = string
+}
 variable "key_vault_name" {
   description = "Name Azure Key Vault"
   default     = "yura-keyvault"
