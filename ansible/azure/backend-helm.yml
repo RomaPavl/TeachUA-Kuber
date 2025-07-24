@@ -1,0 +1,30 @@
+- name: Deploy backend via Helm
+  hosts: frontend
+  become: yes
+  tasks:
+    - name: Install helm if not present
+      shell: curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      args:
+        executable: /bin/bash
+
+    - name: Ensure helm is installed
+      command: helm version
+      register: helm_check
+      failed_when: helm_check.rc != 0 and "Client" not in helm_check.stdout
+
+    - name: Copy Helm chart to master node
+      copy:
+        src: ../backend-helm-chart  # локальна директорія з helm чартом
+        dest: /home/azureuser
+        mode: 0755
+
+    - name: Deploy backend chart
+      command: >
+        helm upgrade --install backend ./backend-helm-chart
+        --namespace default
+        --create-namespace
+        --wait
+      args:
+        chdir: /home/azureuser
+      environment:
+        KUBECONFIG: /home/azureuser/.kube/config

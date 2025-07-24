@@ -1,0 +1,46 @@
+---
+- name: Install K3s master
+  hosts: frontend
+  gather_facts: true
+  become: yes
+  #roles:
+  #  - master
+
+  tasks:
+    - name: Install K3s 
+      shell: |
+       curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--write-kubeconfig-mode 644 --node-external-ip {{ private_ip }} --tls-san {{ private_ip }}" sh -
+      args:
+       executable: /bin/bash
+
+    - name: Get node-token
+      slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: node_token
+    
+    - name: Set node token fact
+      set_fact:
+        k3s_token: "{{ node_token.content | b64decode }}"
+    
+    - name: Save token for agents
+      copy:
+        content: "{{ k3s_token }}"
+        dest: "/tmp/k3s_token.txt"
+    
+    - name: Show nodes (optional)
+      shell: kubectl get nodes
+      register: nodes_output
+      become: false
+    
+    - name: Print node list
+      debug:
+        var: nodes_output.stdout
+
+    - name: Copy kubeconfig to azureuser's home
+      copy:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: /home/azureuser/.kube/config
+        remote_src: yes
+        owner: azureuser
+        group: azureuser
+        mode: '0644'

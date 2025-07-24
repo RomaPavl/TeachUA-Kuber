@@ -1,0 +1,12 @@
+replicaCount: 1
+
+image:
+  repository: rodriguez2711/frontend-teachua
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+
+containerPort: 80

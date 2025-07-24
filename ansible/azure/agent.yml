@@ -1,0 +1,27 @@
+- name: Install K3s agents
+  hosts: backend
+  become: yes
+  gather_facts: true
+  
+  tasks:
+    - name: Get master IP from inventory
+      set_fact:
+        master_ip: "{{ hostvars[groups['frontend'][0]]['private_ip'] }}"
+    
+    - name: Copy token from master
+      fetch:
+        src: "/tmp/k3s_token.txt"
+        dest: "/tmp/k3s_token.txt"
+        flat: yes
+      delegate_to: "{{ groups['frontend'][0] }}"
+      run_once: true
+    
+    - name: Read token from file
+      set_fact:
+        k3s_token: "{{ lookup('file', '/tmp/k3s_token.txt') }}"
+    
+    - name: Install K3s agent
+      shell: |
+         curl -sfL https://get.k3s.io | K3S_URL="https://{{ master_ip }}:6443" K3S_TOKEN="{{ k3s_token }}" sh -
+      args:
+        executable: /bin/bash

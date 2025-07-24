@@ -8,10 +8,6 @@ variable "resource_group_name" {
 variable "admin_username" {
   description = "Logan for admin in VM"
 }
-variable "vm_size" {
-  description = "Tyoe of VM"
-  default     = "Standard_B1s"
-}
 variable "ssh_public_key" {
   description = "Public ssh for vm"
 }
@@ -195,7 +191,40 @@ locals {
       source_port_range          = "*"
       destination_address_prefix = module.vm.private_ips["monitoring"]
       destination_port_range     = "9126"
-    }
+    },
+    {
+      name                       = "AllowK3sAPIFromWorkers"
+      priority                   = 105
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_address_prefix      = module.vm.private_ips["backend"]
+      source_port_range          = "*"
+      destination_address_prefix = module.vm.private_ips["frontend"]
+      destination_port_range     = "6443"
+    },
+    {
+      name                       = "AllowK3sAPIFromMonitoring"
+      priority                   = 106
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_address_prefix      = module.vm.private_ips["monitoring"]
+      source_port_range          = "*"
+      destination_address_prefix = module.vm.private_ips["frontend"]
+      destination_port_range     = "6443"
+    },
+    {
+      name                       = "AllowNodePort"
+      priority                   = 125
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_address_prefix      = "*"
+      source_port_range          = "*"
+      destination_address_prefix = "*"
+      destination_port_range     = "30080"
+    },
   ]
   all_rules = concat(var.security_rules, local.additional_rules)
 }

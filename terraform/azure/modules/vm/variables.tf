@@ -2,7 +2,6 @@ variable "resource_group_name"        { type = string }
 variable "location"                   { type = string }
 variable "admin_username"             { type = string }
 variable "ssh_public_key"             { type = string }
-variable "vm_size"                    { type = string }
 
 variable "vms" {
   description = "Map VM: key – conditional name, value – object with parameters"
@@ -10,6 +9,7 @@ variable "vms" {
     name      = string
     subnet_id = string
     nsg_id    = string
+    vm_size   = string
     public_ip = bool
   }))
 }

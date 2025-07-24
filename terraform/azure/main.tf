@@ -33,25 +33,27 @@ module "vm" {
   location            = var.location
   admin_username      = var.admin_username
   ssh_public_key      = var.ssh_public_key
-  vm_size             = var.vm_size
 
   vms = {
     frontend = {
       name      = var.frontend_name
       subnet_id = module.network.subnet_ids["default"]
       nsg_id    = module.security.nsg_id
+      vm_size   = "Standard_B2s"
       public_ip = true
     }
     backend = {
       name      = var.backend_name
       subnet_id = module.network.subnet_ids["default"]
       nsg_id    = module.security.nsg_id
+      vm_size   = "Standard_B1s"
       public_ip = true
     }
     monitoring = {
       name      = var.monitoring_name
       subnet_id = module.network.subnet_ids["default"]
       nsg_id    = module.security.nsg_id
+      vm_size   = "Standard_B1s"
       public_ip = true
     }
   }

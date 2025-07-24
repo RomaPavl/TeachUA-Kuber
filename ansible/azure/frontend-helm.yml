@@ -1,0 +1,20 @@
+- name: Deploy frontend via Helm
+  hosts: frontend
+  become: yes
+
+  tasks:
+    - name: Copy frontend Helm chart to master node
+      copy:
+        src: ../frontend-helm-chart
+        dest: /home/azureuser
+        mode: '0755'
+
+    - name: Deploy frontend chart
+      command: >
+        helm upgrade --install frontend ./frontend-helm-chart
+        --namespace default
+        --create-namespace
+      args:
+        chdir: /home/azureuser
+      environment:
+        KUBECONFIG: /home/azureuser/.kube/config

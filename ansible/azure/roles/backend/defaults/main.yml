@@ -1,0 +1,19 @@
+---
+# defaults for backend role
+
+# where to clone your repo & build context
+app_dir: /opt/backend-teachua
+git_repo: "https://github.com/RomaPavl/TeachUA-CICD.git"
+git_version: "main"
+
+# Docker image settings
+docker_image: rodriguez2711/backend-teachua
+docker_image_tag: 33
+container_name: backend-teachua
+
+# Docker network (same as frontend)
+network_name: teachua_net
+
+# Ports to expose
+ports:
+  - "8080:8080"
