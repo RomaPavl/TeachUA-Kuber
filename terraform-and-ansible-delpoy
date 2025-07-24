@@ -178,9 +178,9 @@ backend ansible_host=${env.MONITORING_IP} ansible_user=azureuser ansible_python_
     file(credentialsId: 'teachua-dump', variable: 'DUMP_FILE')
 ]) {
     sh """
-        sudo mkdir -p ansible/azure/playbooks/roles/backend/files
-        sudo cp "$DUMP_FILE" ansible/azure/playbooks/roles/backend/files/teachua_full_dump.sql
-        ansible-playbook ansible/azure/playbooks/backend.yml \
+        sudo mkdir -p ansible/azure/roles/backend/files
+        sudo cp "$DUMP_FILE" ansible/azure/roles/backend/files/teachua_full_dump.sql
+        ansible-playbook ansible/azure/backend.yml \
         -i ansible/azure/inventory/hosts.ini \
         --private-key "$SSH_KEY" \
         -e db_user=$DB_USER \
@@ -195,28 +195,28 @@ backend ansible_host=${env.MONITORING_IP} ansible_user=azureuser ansible_python_
         stage('Run Ansible k3s master') {
       steps {
         script {
-          sh "ansible-playbook ansible/azure/playbooks/kubernetes.yml -i ansible/azure/inventory/hosts.ini"
+          sh "ansible-playbook ansible/azure/kubernetes.yml -i ansible/azure/inventory/hosts.ini"
         }
       }
     }
        stage('Run Ansible k3s agent') {
       steps {
         script {
-          sh "ansible-playbook ansible/azure/playbooks/agent.yml -i ansible/azure/inventory/hosts.ini"
+          sh "ansible-playbook ansible/azure/agent.yml -i ansible/azure/inventory/hosts.ini"
         }
       }
     }
        stage('Run Ansible backend helm') {
       steps {
         script {
-          sh "ansible-playbook ansible/azure/playbooks/backend-helm.yml -i ansible/azure/inventory/hosts.ini"
+          sh "ansible-playbook ansible/azure/backend-helm.yml -i ansible/azure/inventory/hosts.ini"
         }
       }
     }
      stage('Run Ansible frontend helm') {
       steps {
         script {
-          sh "ansible-playbook ansible/azure/playbooks/frontend-helm.yml -i ansible/azure/inventory/hosts.ini"
+          sh "ansible-playbook ansible/azure/frontend-helm.yml -i ansible/azure/inventory/hosts.ini"
         }
       }
     }
