@@ -192,27 +192,34 @@ backend ansible_host=${env.MONITORING_IP} ansible_user=azureuser ansible_python_
 }
 }
 }
-        stage('Run Ansible Frontend Playbook') {
-            steps {
-                withCredentials([
-                    sshUserPrivateKey(credentialsId: 'azure-ssh-key', keyFileVariable: 'SSH_KEY'),
-                    usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD'),
-                ]) {
-                    withEnv([
-                        "AZURE_CLIENT_ID=${env.AZURE_CLIENT_ID}",
-                        "AZURE_CLIENT_SECRET=${env.AZURE_CLIENT_SECRET}",
-                        "AZURE_TENANT_ID=${env.AZURE_TENANT_ID}"
-                    ]) {
-                            sh """
-                                ansible-playbook -i ansible/azure/inventory/hosts.ini \
-                                ansible/azure/playbooks/frontend.yml \
-                                --private-key '${SSH_KEY}' \
-                                -e "backend_ip=${BACKEND_PRIV}"
-                            """
-                    }
-                }
-            }
+        stage('Run Ansible k3s master') {
+      steps {
+        script {
+          sh "ansible-playbook ansible/azure/playbooks/kubernetes.yml -i ansible/azure/inventory/hosts.ini"
         }
+      }
+    }
+       stage('Run Ansible k3s agent') {
+      steps {
+        script {
+          sh "ansible-playbook ansible/azure/playbooks/agent.yml -i ansible/azure/inventory/hosts.ini"
+        }
+      }
+    }
+       stage('Run Ansible backend helm') {
+      steps {
+        script {
+          sh "ansible-playbook ansible/azure/playbooks/backend-helm.yml -i ansible/azure/inventory/hosts.ini"
+        }
+      }
+    }
+     stage('Run Ansible frontend helm') {
+      steps {
+        script {
+          sh "ansible-playbook ansible/azure/playbooks/frontend-helm.yml -i ansible/azure/inventory/hosts.ini"
+        }
+      }
+    }
     }
 }
 
