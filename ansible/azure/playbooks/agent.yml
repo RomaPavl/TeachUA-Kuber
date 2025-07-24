@@ -6,7 +6,7 @@
   tasks:
     - name: Get master IP from inventory
       set_fact:
-      master_ip: "{{ hostvars[groups['frontend'][0]]['private_ip'] }}"
+        master_ip: "{{ hostvars[groups['frontend'][0]]['private_ip'] }}"
 
     - name: Slurp token from master
       slurp:
@@ -21,6 +21,6 @@
 
     - name: Install K3s agent
       shell: |
-         curl -sfL https://get.k3s.io | K3S_URL="https://{{ master_ip }}:6443" K3S_TOKEN="{{ k3s_token }}" sh -
+        curl -sfL https://get.k3s.io | K3S_URL="https://{{ master_ip }}:6443" K3S_TOKEN="{{ k3s_token }}" sh -
       args:
         executable: /bin/bash
